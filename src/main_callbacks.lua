@@ -45,7 +45,13 @@ function love.load()
 end
 
 function love.update(dt)
-    --sprawdzanie klawiatury i ruszanie sprite'em
+
+    -- klawisz ESC wychodzi z gry
+    if love.keyboard.isDown("escape") then
+        love.event.quit()
+    end
+
+    -- ruszanie sprite'em
     if love.keyboard.isDown("s") then
         y = y + dy
         sprites["Marceli"].state = "walk_down"
@@ -64,9 +70,6 @@ function love.update(dt)
             sprites["Marceli"].frame = 1
         end
     end
-
-    
-
 
 
     if x > pixelwidth - w then
