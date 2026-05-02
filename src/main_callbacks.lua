@@ -1,3 +1,5 @@
+map = require("src/entities/map")
+
 function loadAnimFrames(spriteName, animName)
     sprites[spriteName][animName] = {}
     i = 1
@@ -33,15 +35,22 @@ end
 function love.load()
     love.window.setMode(0, 0, {fullscreen = true})
     pixelwidth, pixelheight = love.graphics.getPixelDimensions()
-    x, y, w, h = 0, 200, 100, 100
-    dx, dy = 4, 4
     love.graphics.setDefaultFilter("nearest", "nearest")
+    gamescale = 4
+    pixelwidth = pixelwidth / gamescale
+    pixelheight = pixelheight / gamescale
+    gamecanvas = love.graphics.newCanvas(pixelwidth, pixelheight)
+    x, y, w, h = 0, 200, 16, 16
+    dx, dy = 1, 1
     sprites = {}
     loadSprite("Marceli")
     sprites["Marceli"].state = "idle"
     sprites["Marceli"].frame = 1
     animSpeed = 10
     animCount = animSpeed
+
+    -- test map
+    mapa = map.load("assets/maps/poziom1")
 end
 
 function love.update(dt)
@@ -94,5 +103,14 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.draw(sprites["Marceli"][sprites["Marceli"].state][sprites["Marceli"].frame], x, y, 0, 4, 4)
+
+    love.graphics.setCanvas(gamecanvas)
+    love.graphics.clear(0, 0, 0, 1)
+
+    map.drawLayer(mapa, 1, 0, 0, 0, 0, pixelwidth, pixelheight)
+    love.graphics.draw(sprites["Marceli"][sprites["Marceli"].state][sprites["Marceli"].frame], x, y)
+
+    love.graphics.setCanvas()
+    love.graphics.draw(gamecanvas, 0, 0, 0, gamescale, gamescale)
+
 end
