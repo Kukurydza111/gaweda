@@ -40,7 +40,7 @@ function love.load()
     loadSprite("Marceli")
     sprites["Marceli"].state = "idle"
     sprites["Marceli"].frame = 1
-    animSpeed = 10
+    animSpeed = 11
     animCount = animSpeed
 end
 
