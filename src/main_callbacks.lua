@@ -41,12 +41,12 @@ function love.load()
     pixelheight = pixelheight / gamescale
     gamecanvas = love.graphics.newCanvas(pixelwidth, pixelheight)
     x, y, w, h = 0, 200, 16, 16
-    dx, dy = 1, 1
+    dx, dy = 50, 35
     sprites = {}
     loadSprite("Marceli")
     sprites["Marceli"].state = "idle"
     sprites["Marceli"].frame = 1
-    animSpeed = 10
+    animSpeed = 20
     animCount = animSpeed
 
     -- test map
@@ -62,16 +62,16 @@ function love.update(dt)
 
     -- ruszanie sprite'em
     if love.keyboard.isDown("s") then
-        y = y + dy
+        y = y + dy * dt
         sprites["Marceli"].state = "walk_down"
     elseif love.keyboard.isDown("w") then
-        y = y - dy
+        y = y - dy * dt
         sprites["Marceli"].state = "walk_up"
     elseif love.keyboard.isDown("d") then
-        x = x + dx
+        x = x + dx * dt
         sprites["Marceli"].state = "walk_right"
     elseif love.keyboard.isDown("a") then
-        x = x - dx
+        x = x - dx * dt
         sprites["Marceli"].state = "walk_left"
     else
         if sprites["Marceli"].state ~= "idle" then
