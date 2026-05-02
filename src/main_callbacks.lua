@@ -2,7 +2,7 @@ function loadAnimFrames(spriteName, animName)
     sprites[spriteName][animName] = {}
     i = 1
     while true do
-        local filename = "images/" .. spriteName .. "/" .. animName .. "_" .. i .. ".png"
+        local filename = "assets/images/" .. spriteName .. "/" .. animName .. "_" .. i .. ".png"
         local info = love.filesystem.getInfo(filename)
         if info then
             local image = love.graphics.newImage(filename, {linear = true})
