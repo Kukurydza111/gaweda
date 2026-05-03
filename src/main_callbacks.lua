@@ -21,7 +21,7 @@ function love.load()
     x, y, w, h = 0, 200, 16, 16
     dx, dy = 50, 35
     game.spriteCollection = {}
-    table.insert(game.spriteCollection, sprite.load("Marceli"))
+    table.insert(game.spriteCollection, sprite.load("Witold"))
     game.currentSprite = game.spriteCollection[1]
 
     -- test map
