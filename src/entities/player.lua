@@ -8,10 +8,10 @@ function player.create()
         x = 30,
         y = 100,
         characters = {
-            character.create("Marceli", 50, 35),
-            character.create("Hania", 50, 35),
-            character.create("Witold", 50, 35),
-            character.create("Mieszko", 50, 35)
+            character.create("Marceli"),
+            character.create("Hania"),
+            character.create("Witold"),
+            character.create("Mieszko")
         },
         characterSwitching = false,
         characterSwitchingEffect = particles.newCharacterSwitchEffect()
@@ -20,26 +20,44 @@ function player.create()
     return p
 end
 
-function player.update(p, dt)
+-- check if a collision box at a given point is colliding with anything on map
+function player.isColliding(collisionBox, x, y, map)
+    return false
+end
+
+-- p = player structure
+-- m = map structure (for collision checking)
+function player.update(p, m, dt)
 
     -- move player
+    local newX = p.x
+    local newY = p.y
+    local newState = p.currentCharacter.sprite.state
+
     if love.keyboard.isDown("s") then
-        p.y = p.y + p.currentCharacter.dy * dt
-        p.currentCharacter.sprite.state = "walkdown"
+        newY = p.y + p.currentCharacter.dy * dt
+        newState = "walkdown"
     elseif love.keyboard.isDown("w") then
-        p.y = p.y - p.currentCharacter.dy * dt
-        p.currentCharacter.sprite.state = "walkup"
+        newY = p.y - p.currentCharacter.dy * dt
+        newState = "walkup"
     elseif love.keyboard.isDown("d") then
-        p.x = p.x + p.currentCharacter.dx * dt
-        p.currentCharacter.sprite.state = "walkright"
+        newX = p.x + p.currentCharacter.dx * dt
+        newState = "walkright"
     elseif love.keyboard.isDown("a") then
-        p.x = p.x - p.currentCharacter.dx * dt
-        p.currentCharacter.sprite.state = "walkleft"
+        newX = p.x - p.currentCharacter.dx * dt
+        newState = "walkleft"
     else
         if p.currentCharacter.sprite.state ~= "idle" then
             p.currentCharacter.sprite.state = "idle"
             p.currentCharacter.sprite.frame = 1
         end
+    end
+
+    -- update player state and position if not colliding with solid objects
+    if (newX ~= p.x or newY ~= p.y) and not player.isColliding(p.currentCharacter.collisionBox, newX, newY, m) then
+        p.x = newX
+        p.y = newY
+        p.currentCharacter.sprite.state = newState
     end
 
     -- update current player character

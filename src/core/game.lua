@@ -30,7 +30,7 @@ function game.update(dt)
         love.event.quit()
     end
 
-    player.update(game.player, dt)
+    player.update(game.player, game.map, dt)
     camera.update(
         game.camera,
         game.player,

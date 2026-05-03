@@ -6,10 +6,12 @@ function map.load(filename)
     local level = require(filename)
     -- load associated tilesets, images, and quads from exported Tiled files
     level.quads = {}
+    level.collisionboxes = {}
     for k, v in pairs(level.tilesets) do
         local t = require("assets/maps/" .. v.name)
-        t.loveimage = love.graphics.newImage("assets/maps/" .. t.image)
-        t.tilequads = map.loadTileQuads(t, level.quads, v.firstgid)
+        t.loveimage = love.graphics.newImage("assets/maps/" .. t.name .. ".png")
+        map.loadTileQuads(t, level.quads, v.firstgid)
+        map.loadTileCollisionBoxes(t, level.collisionboxes, v.firstgid)
         level.tilesets[k].tileset = t
     end
 
@@ -46,8 +48,24 @@ function map.loadTileQuads(tileset, quads, firstgid)
             x = x + tileset.tilewidth + tileset.spacing
         end
     end
+end
 
-    return quads
+-- helper function to load collision boxes from Tiled tileset
+function map.loadTileCollisionBoxes(tileset, collisionboxes, firstgid)
+    for i, tile in ipairs(tileset.tiles) do
+        if not collisionboxes[firstgid + tile.id] then
+            collisionboxes[firstgid + tile.id] = {}
+        end
+        for j, object in ipairs(tile.objectGroup.objects) do
+            local collisionbox = {
+                offsetX = object.x,
+                offsetY = object.y,
+                width = object.width,
+                height = object.height
+            }
+            table.insert(collisionboxes[firstgid + tile.id], collisionbox)
+        end
+    end
 end
 
 -- this function renders the base layer of the map
