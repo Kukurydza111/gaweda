@@ -8,7 +8,8 @@ local game = {
     pixelWidth = 480,
     pixelHeight = 270,
     spriteCollection = {},
-    particleEffects = {}
+    particleEffects = {},
+    characterSwitching = false
 }
 
 function game.load()
@@ -90,7 +91,7 @@ function game.update(dt)
     if love.keyboard.isDown("3") then key = 3 end
     if love.keyboard.isDown("4") then key = 4 end
 
-    if key ~= 0 then
+    if key ~= 0 and game.characterSwitching == false then
         local state = game.currentSprite.state
         local frame = 1
         local animCount = game.currentSprite.animSpeed
@@ -101,6 +102,9 @@ function game.update(dt)
         local cse = particles.newCharacterSwitchEffect()
         particles.triggerEffect(cse, x + 8, y + 16, 30)
         table.insert(game.particleEffects, cse)
+        game.characterSwitching = true
+    elseif key == 0 and game.characterSwitching == true then
+        game.characterSwitching = false
     end
 
 end
