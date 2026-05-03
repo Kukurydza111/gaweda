@@ -14,7 +14,7 @@
         },
         "dziedzinec.tmx": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": -1,
             "viewCenter": {
                 "x": 368,
                 "y": 439

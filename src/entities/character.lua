@@ -5,13 +5,13 @@ local character = {}
 function character.create(characterName, dx, dy)
     local c = {
         name = characterName,
-        dx = dx or 50,
-        dy = dy or 35,
+        dx = dx or 60,
+        dy = dy or 45,
         collisionBox = {
             offsetX = 0,
-            offsetY = 0,
+            offsetY = 22,
             width = 16,
-            height = 32
+            height = 12
         },
         sprite = sprite.load(characterName)
     }
