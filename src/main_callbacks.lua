@@ -1,53 +1,28 @@
+game = require("src/core/game")
 map = require("src/entities/map")
+sprite = require("src/entities/sprite")
 
-function loadAnimFrames(spriteName, animName)
-    sprites[spriteName][animName] = {}
-    i = 1
-    while true do
-        local filename = "assets/images/" .. spriteName .. "/" .. animName .. "_" .. i .. ".png"
-        local info = love.filesystem.getInfo(filename)
-        if info then
-            local image = love.graphics.newImage(filename, {linear = true})
-            sprites[spriteName][animName][i] = image
-            i = i + 1
-        else
-            break
-        end
-    end
-end
 
-function loadSprite(name)
-    sprites[name] = {}
-    loadAnimFrames(name, "walk_down")
-    loadAnimFrames(name, "walk_up")
-    loadAnimFrames(name, "walk_left")
-    loadAnimFrames(name, "walk_right")
-    loadAnimFrames(name, "idle")
-end
-
-function nextFrame(sprite)
-    sprite.frame = sprite.frame + 1
-    if sprite.frame > #sprite[sprite.state] then
-        sprite.frame = 1
+function nextFrame(s)
+    s.frame = s.frame + 1
+    if s.frame > #s.animations[s.state] then
+        s.frame = 1
     end
 end
 
 function love.load()
     love.window.setMode(0, 0, {fullscreen = true})
-    pixelwidth, pixelheight = love.graphics.getPixelDimensions()
+    game.pixelwidth, game.pixelheight = love.graphics.getPixelDimensions()
     love.graphics.setDefaultFilter("nearest", "nearest")
-    gamescale = 4
-    pixelwidth = pixelwidth / gamescale
-    pixelheight = pixelheight / gamescale
-    gamecanvas = love.graphics.newCanvas(pixelwidth, pixelheight)
+    game.scale = 4
+    game.pixelwidth = game.pixelwidth / game.scale
+    game.pixelheight = game.pixelheight / game.scale
+    game.canvas = love.graphics.newCanvas(game.pixelwidth, game.pixelheight)
     x, y, w, h = 0, 200, 16, 16
     dx, dy = 50, 35
-    sprites = {}
-    loadSprite("Marceli")
-    sprites["Marceli"].state = "idle"
-    sprites["Marceli"].frame = 1
-    animSpeed = 20
-    animCount = animSpeed
+    game.spriteCollection = {}
+    table.insert(game.spriteCollection, sprite.load("Marceli"))
+    game.currentSprite = game.spriteCollection[1]
 
     -- test map
     mapa = map.load("assets/maps/poziom1")
@@ -63,54 +38,54 @@ function love.update(dt)
     -- ruszanie sprite'em
     if love.keyboard.isDown("s") then
         y = y + dy * dt
-        sprites["Marceli"].state = "walk_down"
+        game.currentSprite.state = "walkdown"
     elseif love.keyboard.isDown("w") then
         y = y - dy * dt
-        sprites["Marceli"].state = "walk_up"
+        game.currentSprite.state = "walkup"
     elseif love.keyboard.isDown("d") then
         x = x + dx * dt
-        sprites["Marceli"].state = "walk_right"
+        game.currentSprite.state = "walkright"
     elseif love.keyboard.isDown("a") then
         x = x - dx * dt
-        sprites["Marceli"].state = "walk_left"
+        game.currentSprite.state = "walkleft"
     else
-        if sprites["Marceli"].state ~= "idle" then
-            sprites["Marceli"].state = "idle"
-            sprites["Marceli"].frame = 1
+        if game.currentSprite.state ~= "idle" then
+            game.currentSprite.state = "idle"
+            game.currentSprite.frame = 1
         end
     end
 
 
-    if x > pixelwidth - w then
-        x = pixelwidth - w
+    if x > game.pixelwidth - w then
+        x = game.pixelwidth - w
     end
     if x < 0 then
         x = 0
     end
-    if y > pixelheight - h then
-        y = pixelheight - h
+    if y > game.pixelheight - h then
+        y = game.pixelheight - h
     end
     if y < 0 then
         y = 0
     end
 
-    if animCount <= 0 then
-        nextFrame(sprites["Marceli"])
-        animCount = animSpeed
+    if game.currentSprite.animCount <= 0 then
+        nextFrame(game.currentSprite)
+        game.currentSprite.animCount = game.currentSprite.animSpeed
     else
-        animCount = animCount - 1
+        game.currentSprite.animCount = game.currentSprite.animCount - 1
     end
 end
 
 function love.draw()
 
-    love.graphics.setCanvas(gamecanvas)
+    love.graphics.setCanvas(game.canvas)
     love.graphics.clear(0, 0, 0, 1)
 
-    map.drawLayer(mapa, 1, 0, 0, 0, 0, pixelwidth, pixelheight)
-    love.graphics.draw(sprites["Marceli"][sprites["Marceli"].state][sprites["Marceli"].frame], x, y)
+    map.drawLayer(mapa, 1, 0, 0, 0, 0, game.pixelwidth, game.pixelheight)
+    love.graphics.draw(game.currentSprite.animations[game.currentSprite.state][game.currentSprite.frame], x, y)
 
     love.graphics.setCanvas()
-    love.graphics.draw(gamecanvas, 0, 0, 0, gamescale, gamescale)
+    love.graphics.draw(game.canvas, 0, 0, 0, game.scale, game.scale)
 
 end
