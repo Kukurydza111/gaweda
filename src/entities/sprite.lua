@@ -50,5 +50,20 @@ function sprite.load(spriteName)
     return newSprite
 end
 
+function sprite.update(s, dt)
+    -- animacja sprite'a
+    if s.animCount <= 0 then
+        -- next frame
+        s.frame = s.frame + 1
+        if s.frame > #s.animations[s.state] then
+            s.frame = 1
+        end
+        -- reset anim speed counter
+        s.animCount = s.animSpeed
+    else
+        -- reduce anim speed counter
+        s.animCount = s.animCount - 1
+    end
+end
 
 return sprite

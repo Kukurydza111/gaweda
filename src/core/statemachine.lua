@@ -45,3 +45,5 @@ function stateMachine.keypressed(key)
         currentState.keypressed(key)
     end
 end
+
+return stateMachine
