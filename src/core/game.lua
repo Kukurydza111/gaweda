@@ -1,12 +1,14 @@
 sprite = require("src/entities/sprite")
 map = require("src/entities/map")
+particles = require("src/entities/particles")
 
 
 local game = {
     scale = 4,
     pixelWidth = 480,
     pixelHeight = 270,
-    spriteCollection = {}
+    spriteCollection = {},
+    particleEffects = {}
 }
 
 function game.load()
@@ -18,6 +20,9 @@ function game.load()
     game.canvas = love.graphics.newCanvas(game.pixelwidth, game.pixelheight)
     x, y, w, h = 0, 200, 16, 16
     dx, dy = 50, 35
+    table.insert(game.spriteCollection, sprite.load("Marceli"))
+    table.insert(game.spriteCollection, sprite.load("Hania"))
+    table.insert(game.spriteCollection, sprite.load("Witold"))
     table.insert(game.spriteCollection, sprite.load("Mieszko"))
     game.currentSprite = game.spriteCollection[1]
 
@@ -52,7 +57,6 @@ function game.update(dt)
         end
     end
 
-
     if x > game.pixelwidth - w then
         x = game.pixelwidth - w
     end
@@ -66,12 +70,39 @@ function game.update(dt)
         y = 0
     end
 
+    -- animacja sprite'a
     if game.currentSprite.animCount <= 0 then
         game.nextFrame(game.currentSprite)
         game.currentSprite.animCount = game.currentSprite.animSpeed
     else
         game.currentSprite.animCount = game.currentSprite.animCount - 1
     end
+
+    -- update particle effects
+    for i, e in ipairs(game.particleEffects) do
+        e:update(dt)
+    end
+
+    -- zmiana postaci
+    local key = 0
+    if love.keyboard.isDown("1") then key = 1 end
+    if love.keyboard.isDown("2") then key = 2 end
+    if love.keyboard.isDown("3") then key = 3 end
+    if love.keyboard.isDown("4") then key = 4 end
+
+    if key ~= 0 then
+        local state = game.currentSprite.state
+        local frame = 1
+        local animCount = game.currentSprite.animSpeed
+        game.currentSprite = game.spriteCollection[key]
+        game.currentSprite.state = state
+        game.currentSprite.frame = frame
+        game.currentSprite.animCount = animCount
+        local cse = particles.newCharacterSwitchEffect()
+        particles.triggerEffect(cse, x + 8, y + 16, 30)
+        table.insert(game.particleEffects, cse)
+    end
+
 end
 
 function game.draw()
@@ -81,6 +112,10 @@ function game.draw()
 
     map.drawLayer(mapa, 1, 0, 0, 0, 0, game.pixelwidth, game.pixelheight)
     love.graphics.draw(game.currentSprite.animations[game.currentSprite.state][game.currentSprite.frame], x, y)
+    -- draw particle effects
+    for i, e in ipairs(game.particleEffects) do
+        love.graphics.draw(e, 0, 0)
+    end
 
     love.graphics.setCanvas()
     love.graphics.draw(game.canvas, 0, 0, 0, game.scale, game.scale)
