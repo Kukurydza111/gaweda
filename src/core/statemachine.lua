@@ -6,6 +6,9 @@ local stateMachine = {}
 -- register a state (needs to be called only once per state)
 function stateMachine.register(name, stateTable)
     states[name] = stateTable
+    if stateTable.load then
+        stateTable.load()
+    end
 end
 
 -- switch to a new state (can pass data to a new state)

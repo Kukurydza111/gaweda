@@ -2,20 +2,9 @@ map = require("src/entities/map")
 player = require("src/entities/player")
 camera = require("src/entities/camera")
 
-local game = {
-    scale = 4,
-    pixelWidth = 480,
-    pixelHeight = 270,
-    player = nil,
-    map = nil,
-    camera = nil
-}
+local game = {}
 
 function game.load()
-    local screenWidth, screenHeight = love.graphics.getPixelDimensions()
-    game.pixelwidth = screenWidth / game.scale
-    game.pixelheight = screenHeight / game.scale
-    game.canvas = love.graphics.newCanvas(game.pixelwidth, game.pixelheight)
     game.player = player.create()
     game.map = map.load("assets/maps/poziom1")
     game.camera = camera.create()
@@ -32,8 +21,8 @@ function game.update(dt)
     camera.update(
         game.camera,
         game.player,
-        game.pixelWidth,
-        game.pixelHeight,
+        glob.pixelwidth,
+        glob.pixelheight,
         game.map.width * game.map.tilewidth,
         game.map.height * game.map.tileheight
     )
@@ -42,7 +31,7 @@ end
 
 function game.draw()
 
-    love.graphics.setCanvas(game.canvas)
+    love.graphics.setCanvas(glob.canvas)
     love.graphics.clear(0, 0, 0, 1)
 
     -- set camera
@@ -57,7 +46,7 @@ function game.draw()
     camera.unset()
 
     love.graphics.setCanvas()
-    love.graphics.draw(game.canvas, 0, 0, 0, game.scale, game.scale)
+    love.graphics.draw(glob.canvas, 0, 0, 0, glob.scale, glob.scale)
 
 end
 
