@@ -16,7 +16,7 @@
  <tile id="15"/>
  <tile id="16"/>
  <tile id="11"/>
- <tile id="17"/>
  <tile id="5"/>
  <tile id="7"/>
+ <tile id="17"/>
 </tileset>
