@@ -16,14 +16,12 @@ return {
     {
       name = "bruk",
       firstgid = 1,
-      filename = "4760/bruk.tsx",
-      exportfilename = "bruk.lua"
+      filename = "4760/bruk.tsx"
     },
     {
       name = "szkola",
       firstgid = 16,
-      filename = "4760/szkola.tsx",
-      exportfilename = "szkola.lua"
+      filename = "4760/szkola.tsx"
     }
   },
   layers = {

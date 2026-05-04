@@ -1,15 +1,14 @@
-sprite = require("src/entities/sprite")
 map = require("src/entities/map")
-particles = require("src/entities/particles")
-
+player = require("src/entities/player")
+camera = require("src/entities/camera")
 
 local game = {
     scale = 4,
     pixelWidth = 480,
     pixelHeight = 270,
-    spriteCollection = {},
-    particleEffects = {},
-    characterSwitching = false
+    player = nil,
+    map = nil,
+    camera = nil
 }
 
 function game.load()
@@ -19,16 +18,9 @@ function game.load()
     game.pixelwidth = screenWidth / game.scale
     game.pixelheight = screenHeight / game.scale
     game.canvas = love.graphics.newCanvas(game.pixelwidth, game.pixelheight)
-    x, y, w, h = 0, 200, 16, 16
-    dx, dy = 50, 35
-    table.insert(game.spriteCollection, sprite.load("Marceli"))
-    table.insert(game.spriteCollection, sprite.load("Hania"))
-    table.insert(game.spriteCollection, sprite.load("Witold"))
-    table.insert(game.spriteCollection, sprite.load("Mieszko"))
-    game.currentSprite = game.spriteCollection[1]
-
-    -- test map
-    mapa = map.load("assets/maps/poziom1")
+    game.player = player.create()
+    game.map = map.load("assets/maps/poziom1")
+    game.camera = camera.create()
 end
 
 function game.update(dt)
@@ -38,74 +30,15 @@ function game.update(dt)
         love.event.quit()
     end
 
-    -- ruszanie sprite'em
-    if love.keyboard.isDown("s") then
-        y = y + dy * dt
-        game.currentSprite.state = "walkdown"
-    elseif love.keyboard.isDown("w") then
-        y = y - dy * dt
-        game.currentSprite.state = "walkup"
-    elseif love.keyboard.isDown("d") then
-        x = x + dx * dt
-        game.currentSprite.state = "walkright"
-    elseif love.keyboard.isDown("a") then
-        x = x - dx * dt
-        game.currentSprite.state = "walkleft"
-    else
-        if game.currentSprite.state ~= "idle" then
-            game.currentSprite.state = "idle"
-            game.currentSprite.frame = 1
-        end
-    end
-
-    if x > game.pixelwidth - w then
-        x = game.pixelwidth - w
-    end
-    if x < 0 then
-        x = 0
-    end
-    if y > game.pixelheight - h then
-        y = game.pixelheight - h
-    end
-    if y < 0 then
-        y = 0
-    end
-
-    -- animacja sprite'a
-    if game.currentSprite.animCount <= 0 then
-        game.nextFrame(game.currentSprite)
-        game.currentSprite.animCount = game.currentSprite.animSpeed
-    else
-        game.currentSprite.animCount = game.currentSprite.animCount - 1
-    end
-
-    -- update particle effects
-    for i, e in ipairs(game.particleEffects) do
-        e:update(dt)
-    end
-
-    -- zmiana postaci
-    local key = 0
-    if love.keyboard.isDown("1") then key = 1 end
-    if love.keyboard.isDown("2") then key = 2 end
-    if love.keyboard.isDown("3") then key = 3 end
-    if love.keyboard.isDown("4") then key = 4 end
-
-    if key ~= 0 and game.characterSwitching == false then
-        local state = game.currentSprite.state
-        local frame = 1
-        local animCount = game.currentSprite.animSpeed
-        game.currentSprite = game.spriteCollection[key]
-        game.currentSprite.state = state
-        game.currentSprite.frame = frame
-        game.currentSprite.animCount = animCount
-        local cse = particles.newCharacterSwitchEffect()
-        particles.triggerEffect(cse, x + 8, y + 16, 30)
-        table.insert(game.particleEffects, cse)
-        game.characterSwitching = true
-    elseif key == 0 and game.characterSwitching == true then
-        game.characterSwitching = false
-    end
+    player.update(game.player, game.map, dt)
+    camera.update(
+        game.camera,
+        game.player,
+        game.pixelWidth,
+        game.pixelHeight,
+        game.map.width * game.map.tilewidth,
+        game.map.height * game.map.tileheight
+    )
 
 end
 
@@ -114,24 +47,20 @@ function game.draw()
     love.graphics.setCanvas(game.canvas)
     love.graphics.clear(0, 0, 0, 1)
 
-    map.drawLayer(mapa, 1, 0, 0, 0, 0, game.pixelwidth, game.pixelheight)
-    love.graphics.draw(game.currentSprite.animations[game.currentSprite.state][game.currentSprite.frame], x, y)
-    -- draw particle effects
-    for i, e in ipairs(game.particleEffects) do
-        love.graphics.draw(e, 0, 0)
-    end
+    -- set camera
+    camera.set(game.camera)
+    -- draw map
+    map.drawLayer(game.map, 1, 0, 0, 0, 0,
+        game.map.width * game.map.tilewidth,
+        game.map.height * game.map.tileheight)
+    -- draw player
+    player.draw(game.player)
+    -- unset camera
+    camera.unset()
 
     love.graphics.setCanvas()
     love.graphics.draw(game.canvas, 0, 0, 0, game.scale, game.scale)
 
-end
-
-
-function game.nextFrame(s)
-    s.frame = s.frame + 1
-    if s.frame > #s.animations[s.state] then
-        s.frame = 1
-    end
 end
 
 

@@ -14,10 +14,10 @@
         },
         "dziedzinec.tmx": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": -1,
             "viewCenter": {
                 "x": 368,
-                "y": 568
+                "y": 439
             }
         },
         "szkola.tsx": {
@@ -39,8 +39,8 @@
     "project": "Gaweda_P.tiled-project",
     "recentFiles": [
         "dziedzinec.tmx",
-        "bruk.tsx",
         "szkola.tsx",
+        "bruk.tsx",
         "tmw_desert_spacing.tsx"
     ],
     "tileset.lastUsedExportFilter": "Lua files (*.lua)",
