@@ -29,7 +29,10 @@ end
 
 function love.draw()
     love.graphics.setCanvas(glob.canvas)
+    love.graphics.clear(0, 0, 0, 1)
+
     statemachine.draw()
+
     love.graphics.setCanvas()
     love.graphics.draw(glob.canvas, 0, 0, 0, glob.scale, glob.scale)
 end

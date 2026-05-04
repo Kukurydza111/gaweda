@@ -20,7 +20,7 @@ function game.update(dt)
 
     -- klawisz SPACE uruchamia dialog
     if love.keyboard.isDown("space") then
-        statemachine.switch("dialog", nil)
+        statemachine.switch("dialog", game)
     end
 
     player.update(game.player, game.map, dt)
@@ -37,7 +37,6 @@ end
 
 function game.draw()
 
-    love.graphics.clear(0, 0, 0, 1)
     love.graphics.setColor(1, 1, 1, 1)
 
     -- set camera
