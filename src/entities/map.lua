@@ -56,14 +56,16 @@ function map.loadTileCollisionBoxes(tileset, collisionboxes, firstgid)
         if not collisionboxes[firstgid + tile.id] then
             collisionboxes[firstgid + tile.id] = {}
         end
-        for j, object in ipairs(tile.objectGroup.objects) do
-            local collisionbox = {
-                offsetX = object.x,
-                offsetY = object.y,
-                width = object.width,
-                height = object.height
-            }
-            table.insert(collisionboxes[firstgid + tile.id], collisionbox)
+        if tile.objectgroup then
+            for j, object in ipairs(tile.objectGroup.objects) do
+                local collisionbox = {
+                    offsetX = object.x,
+                    offsetY = object.y,
+                    width = object.width,
+                    height = object.height
+                }
+                table.insert(collisionboxes[firstgid + tile.id], collisionbox)
+            end
         end
     end
 end

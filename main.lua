@@ -28,5 +28,8 @@ function love.update(dt)
 end
 
 function love.draw()
+    love.graphics.setCanvas(glob.canvas)
     statemachine.draw()
+    love.graphics.setCanvas()
+    love.graphics.draw(glob.canvas, 0, 0, 0, glob.scale, glob.scale)
 end

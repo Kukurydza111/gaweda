@@ -1,3 +1,4 @@
+statemachine = require("src/core/statemachine")
 map = require("src/entities/map")
 player = require("src/entities/player")
 camera = require("src/entities/camera")
@@ -17,6 +18,11 @@ function game.update(dt)
         love.event.quit()
     end
 
+    -- klawisz SPACE uruchamia dialog
+    if love.keyboard.isDown("space") then
+        statemachine.switch("dialog", nil)
+    end
+
     player.update(game.player, game.map, dt)
     camera.update(
         game.camera,
@@ -31,8 +37,8 @@ end
 
 function game.draw()
 
-    love.graphics.setCanvas(glob.canvas)
     love.graphics.clear(0, 0, 0, 1)
+    love.graphics.setColor(1, 1, 1, 1)
 
     -- set camera
     camera.set(game.camera)
@@ -44,9 +50,6 @@ function game.draw()
     player.draw(game.player)
     -- unset camera
     camera.unset()
-
-    love.graphics.setCanvas()
-    love.graphics.draw(glob.canvas, 0, 0, 0, glob.scale, glob.scale)
 
 end
 
