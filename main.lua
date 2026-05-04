@@ -13,8 +13,9 @@ function love.load()
     glob.titlefont = love.graphics.newFont("assets/fonts/LuckiestGuy.ttf", 50)
     glob.mainfont = love.graphics.newFont("assets/fonts/PixelifySans.ttf")
 
-    statemachine.register("game", require("src/states/game"))
     statemachine.register("menu", require("src/states/menu"))
+    statemachine.register("game", require("src/states/game"))
+    statemachine.register("dialog", require("src/states/dialog"))
     statemachine.switch("menu")
 end
 
