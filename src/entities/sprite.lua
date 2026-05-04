@@ -4,7 +4,6 @@ function sprite.load(spriteName)
     local newSprite = {
         name = spriteName,
         animations = {},
-        state = "idle",
         frame = 1,
         animSpeed = 20,
         animCount = 20
@@ -50,12 +49,12 @@ function sprite.load(spriteName)
     return newSprite
 end
 
-function sprite.update(s, dt)
+function sprite.update(s, state, dt)
     -- animacja sprite'a
     if s.animCount <= 0 then
         -- next frame
         s.frame = s.frame + 1
-        if s.frame > #s.animations[s.state] then
+        if s.frame > #s.animations[state] then
             s.frame = 1
         end
         -- reset anim speed counter
