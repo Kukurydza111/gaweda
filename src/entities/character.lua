@@ -13,14 +13,15 @@ function character.create(characterName, dx, dy)
             width = 16,
             height = 12
         },
-        sprite = sprite.load(characterName)
+        sprite = sprite.load(characterName),
+        state = "idle"
     }
     return c
 end
 
 function character.update(c, dt)
     if c.sprite then
-        sprite.update(c.sprite, dt)
+        sprite.update(c.sprite, c.state, dt)
     end
 end
 

@@ -94,7 +94,7 @@ function player.update(p, m, dt)
     -- move player
     local newX = p.x
     local newY = p.y
-    local newState = p.currentCharacter.sprite.state
+    local newState = p.currentCharacter.state
 
     if love.keyboard.isDown("s") then
         newY = p.y + p.currentCharacter.dy * dt
@@ -109,8 +109,8 @@ function player.update(p, m, dt)
         newX = p.x - p.currentCharacter.dx * dt
         newState = "walkleft"
     else
-        if p.currentCharacter.sprite.state ~= "idle" then
-            p.currentCharacter.sprite.state = "idle"
+        if p.currentCharacter.state ~= "idle" then
+            p.currentCharacter.state = "idle"
             p.currentCharacter.sprite.frame = 1
         end
     end
@@ -119,7 +119,7 @@ function player.update(p, m, dt)
     if (newX ~= p.x or newY ~= p.y) and not player.isColliding(p.currentCharacter.collisionBox, newX, newY, m) then
         p.x = newX
         p.y = newY
-        p.currentCharacter.sprite.state = newState
+        p.currentCharacter.state = newState
     end
 
     -- update current player character
@@ -138,11 +138,11 @@ function player.update(p, m, dt)
     if love.keyboard.isDown("4") then key = 4 end
 
     if key ~= 0 and p.characterSwitching == false and p.characters[key] then
-        local state = p.currentCharacter.sprite.state
+        local state = p.currentCharacter.state
         local frame = 1
         local animCount = p.currentCharacter.sprite.animSpeed
         p.currentCharacter = p.characters[key]
-        p.currentCharacter.sprite.state = state
+        p.currentCharacter.state = state
         p.currentCharacter.sprite.frame = frame
         p.currentCharacter.sprite.animCount = animCount
         particles.triggerEffect(p.characterSwitchingEffect, p.x + 8, p.y + 16, 30)
@@ -155,7 +155,7 @@ end
 
 function player.draw(p)
     -- draw players sprite
-    local state = p.currentCharacter.sprite.state
+    local state = p.currentCharacter.state
     local frame = p.currentCharacter.sprite.frame
     local image = p.currentCharacter.sprite.animations[state][frame]
     love.graphics.draw(image, p.x, p.y)
