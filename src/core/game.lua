@@ -12,8 +12,6 @@ local game = {
 }
 
 function game.load()
-    love.window.setMode(0, 0, {fullscreen = true})
-    love.graphics.setDefaultFilter("nearest", "nearest")
     local screenWidth, screenHeight = love.graphics.getPixelDimensions()
     game.pixelwidth = screenWidth / game.scale
     game.pixelheight = screenHeight / game.scale
