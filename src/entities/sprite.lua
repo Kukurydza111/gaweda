@@ -5,8 +5,8 @@ function sprite.load(spriteName)
         name = spriteName,
         animations = {},
         frame = 1,
-        animSpeed = 20,
-        animCount = 20
+        animSpeed = 7,
+        animCount = 7
     }
 
     local directory = "assets/images/sprites/" .. spriteName
@@ -61,7 +61,7 @@ function sprite.update(s, state, dt)
         s.animCount = s.animSpeed
     else
         -- reduce anim speed counter
-        s.animCount = s.animCount - 1
+        s.animCount = s.animCount - 60 * dt
     end
 end
 

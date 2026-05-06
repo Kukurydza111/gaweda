@@ -10,13 +10,13 @@ function dialog.enter(game)
         h_percent = 35,
         color = {0.1, 0.1, 0.2, 0.5}
     }
-    dialog.unfold_speed = 4
+    dialog.unfold_speed = 10
     dialog.unfold_percent = 0
 end
 
 function dialog.update(dt)
     if dialog.state == "opening" then
-        dialog.unfold_percent = dialog.unfold_percent + dialog.unfold_speed
+        dialog.unfold_percent = dialog.unfold_percent + dialog.unfold_speed * 60 * dt
         if dialog.unfold_percent >= 100 then
             dialog.unfold_percent = 100
             dialog.state = "talking"
