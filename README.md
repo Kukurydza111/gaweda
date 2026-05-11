@@ -2,7 +2,7 @@
 
 A top-down 2D RPG built with [LÖVE2D](https://love2d.org/) as a home-schooling high-school project by a teenage girl from Poland.
 
-**All art** — characters, tilesets, UI elements, and effects — is created by her.
+**All art** — characters, tilesets, UI elements, and effects — is created by her, except for Google Fonts
 **Most of the code** is written by her dad.
 Code comments and this README were assisted by AI.
 

@@ -28,7 +28,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 All artwork in this repository (images, sprites, and other media assets
 found in the `assets/` directory) is licensed under the Creative Commons
-Attribution-NonCommercial 4.0 International License.
+Attribution-NonCommercial 4.0 International License, with the exception of the fonts/
+directory - "Luckiest Guy" font is licensed under the Apache License Version 2.0, and
+"Pixelify Sans" font is licensed under the SIL Open Font License Version 1.1. 
 
 Copyright (C) 2026  github.com/kukurydza111
 
