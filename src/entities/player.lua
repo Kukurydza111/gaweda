@@ -1,8 +1,12 @@
+-- Player module: manages the player entity — movement, collision, character switching, and rendering.
+-- The "player" is a container holding multiple swappable characters (Marceli, Hania, Witold, Mieszko).
 particles = require("src/entities/particles")
 character = require("src/entities/character")
 
 local player = {}
 
+-- Creates a new player instance at position (30, 100).
+-- Holds a roster of 4 characters and starts as the first one (Marceli).
 function player.create()
     local p = {
         x = 30,
@@ -13,16 +17,20 @@ function player.create()
             character.create("Witold"),
             character.create("Mieszko")
         },
-        characterSwitching = false,
+        characterSwitching = false,  -- debounce flag: prevents repeated switches while a key is held
         characterSwitchingEffect = particles.newCharacterSwitchEffect()
     }
     p.currentCharacter = p.characters[1]
     return p
 end
 
--- check if a collision box at a given point is colliding with anything on map
+-- Returns true if a collision box placed at (x, y) overlaps any solid tile on the map.
+-- collisionBox: table with offsetX, offsetY, width, height (relative to the entity origin)
+-- x, y: world-space position of the entity
+-- map: map structure (tilewidth, tileheight, layers, collisionboxes)
 function player.isColliding(collisionBox, x, y, map)
 
+    -- Build the absolute world-space AABB for the player's collision box
     playerCB = {
         x1 = x + collisionBox.offsetX,
         y1 = y + collisionBox.offsetY,
@@ -30,20 +38,21 @@ function player.isColliding(collisionBox, x, y, map)
         y2 = y + collisionBox.offsetY + collisionBox.height
     }
 
-    -- find the map coorindates of the tile containing top-left corner of player's collisionBox
+    -- Find the tile coords of the top-left corner, then the span of tiles covered
     mapX = math.floor(playerCB.x1 / map.tilewidth)
     mapY = math.floor(playerCB.y1 / map.tileheight)
     mapW = math.floor(playerCB.x2 / map.tilewidth) - mapX
     mapH = math.floor(playerCB.y2 / map.tileheight) - mapY
 
-    -- go through the relevant tile collision boxes withn (mapX, mapY)->(mapW, mapH)
-    -- and return true if collision found
+    -- Only check tiles that the player's AABB could actually overlap, not the whole map
     for my = mapY, mapY + mapH do
         for mx = mapX, mapX + mapW do
+            -- Tile data is a flat array; convert 2D tile coords to a 1-based flat index
             local tilenum = map.layers[1].data[1 + my * map.layers[1].width + mx]
             if map.collisionboxes[tilenum] then
                 cblist = map.collisionboxes[tilenum]
                 for k, cb in pairs(cblist) do
+                    -- Convert tile-relative collision box to world-space coords
                     local mx1 = mx * map.tilewidth + cb.offsetX
                     local my1 = my * map.tileheight + cb.offsetY
                     local mx2 = mx1 + cb.width
@@ -62,12 +71,14 @@ function player.isColliding(collisionBox, x, y, map)
         end
     end
 
-    -- went through the whole list without detecting a collision, therefore return false
     return false
 end
 
+-- Standard axis-aligned bounding box overlap test.
+-- box1, box2: tables with x1,y1 (one corner) and x2,y2 (opposite corner) in world coords.
+-- Returns true if the two boxes overlap.
 function player.checkAABBcollision(box1, box2)
-    -- Normalize both boxes to get proper min/max
+    -- Normalize both boxes to proper min/max in case coords were stored in any order
     local left1  = math.min(box1.x1, box1.x2)
     local right1 = math.max(box1.x1, box1.x2)
     local top1   = math.min(box1.y1, box1.y2)
@@ -87,11 +98,13 @@ function player.checkAABBcollision(box1, box2)
     )
 end
 
--- p = player structure
--- m = map structure (for collision checking)
+-- Updates player state each frame.
+-- p: player structure (from player.create)
+-- m: map structure (used for collision checks)
+-- dt: delta time in seconds
 function player.update(p, m, dt)
 
-    -- move player
+    -- Read directional input and compute the intended new position and animation state
     local newX = p.x
     local newY = p.y
     local newState = p.currentCharacter.state
@@ -109,28 +122,30 @@ function player.update(p, m, dt)
         newX = p.x - p.currentCharacter.dx * dt
         newState = "walkleft"
     else
+        -- No movement key held: snap back to idle and reset animation to first frame
         if p.currentCharacter.state ~= "idle" then
             p.currentCharacter.state = "idle"
             p.currentCharacter.sprite.frame = 1
         end
     end
 
-    -- update player state and position if not colliding with solid objects
+    -- Only commit movement if the destination is clear of solid tiles
     if (newX ~= p.x or newY ~= p.y) and not player.isColliding(p.currentCharacter.collisionBox, newX, newY, m) then
         p.x = newX
         p.y = newY
         p.currentCharacter.state = newState
     end
 
-    -- update current player character
+    -- Advance the current character's animation
     character.update(p.currentCharacter, dt)
-    
-    -- update character switching effect
+
+    -- Advance the particle effect (plays after a character switch)
     if p.characterSwitchingEffect then
         p.characterSwitchingEffect:update(dt)
     end
 
-    -- zmiana postaci
+    -- Character switching: keys 1-4 select a character from the roster.
+    -- characterSwitching is a debounce flag so holding a key only fires the switch once.
     local key = 0
     if love.keyboard.isDown("1") then key = 1 end
     if love.keyboard.isDown("2") then key = 2 end
@@ -138,6 +153,7 @@ function player.update(p, m, dt)
     if love.keyboard.isDown("4") then key = 4 end
 
     if key ~= 0 and p.characterSwitching == false and p.characters[key] then
+        -- Carry over the current animation state so the new character enters mid-motion
         local state = p.currentCharacter.state
         local frame = 1
         local animCount = p.currentCharacter.sprite.animSpeed
@@ -145,21 +161,22 @@ function player.update(p, m, dt)
         p.currentCharacter.state = state
         p.currentCharacter.sprite.frame = frame
         p.currentCharacter.sprite.animCount = animCount
+        -- Spawn the switch particle effect roughly at the character's feet (+8x, +16y)
         particles.triggerEffect(p.characterSwitchingEffect, p.x + 8, p.y + 16, 30)
         p.characterSwitching = true
     elseif key == 0 and p.characterSwitching == true then
+        -- Key released: reset debounce so the next press can trigger another switch
         p.characterSwitching = false
     end
 
 end
 
+-- Draws the current character sprite and any active particle effects.
 function player.draw(p)
-    -- draw players sprite
     local state = p.currentCharacter.state
     local frame = p.currentCharacter.sprite.frame
     local image = p.currentCharacter.sprite.animations[state][frame]
     love.graphics.draw(image, p.x, p.y)
-    -- draw effects
     love.graphics.draw(p.characterSwitchingEffect, 0, 0)
 end
 
